@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+
+    <script src="./main.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@latest/build/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@latest/dist/jsQR.min.js"></script>
+    
+    <title>Kaikei</title>
+
+    <style type="text/css">
+      div.inp {
+        width: 50px;
+        height: 50px;
+        top: 50px;
+        left: 50px;
+      }
+      div.but {
+        width: 150px;
+        height: 50px;
+        top: 50px;
+        left: 150px;
+      }
+      div.hin {
+        width: 150px;
+        height: 50px;
+        top: 100px;
+        left: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <form id="form1" action="#">
+      <div class="inp">
+        <!--バーコードの数値情報はここ！---------------------------------->
+        <input type="text" id="key" onchange="fncGetHinmei(key.value)" value="0" />
+        <!---------------------------------------------------------->
+      </div>
+      <div class="hin">
+        <input type="text" id="Hinmei" value="" />
+      </div>
+      <input type="text" id="Kingak" value="0" />円
+
+      <div class="but">
+        <input type="button" onclick="fncReset()"  value="リセット" />
+      </div>
+      合計は
+      <br>
+      <input type="text" id="Out" value="0" />円です。
+      </br>
+    </form>
+  </body>
+  </html>
+  
+</html>

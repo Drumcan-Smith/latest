@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+
+    <script src="./main.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@latest/build/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@latest/dist/jsQR.min.js"></script>
+    
+    <title>Kaikei</title>
+
+    <style type="text/css">
+      div.inp {
+        width: 50px;
+        height: 50px;
+        top: 50px;
+        left: 50px;
+      }
+      div.but {
+        width: 150px;
+        height: 50px;
+        top: 50px;
+        left: 150px;
+      }
+      div.hin {
+        width: 150px;
+        height: 50px;
+        top: 100px;
+        left: 50px;
+      }
+    </style>
+  </head>
+  <body>
+      <video id="video" width="320" height="480" autoplay></video>
+      <textarea id="result"></textarea>
+      <canvas id="canvas" width="240" height="240"></canvas>
+      <textarea id="data"></textarea>
+    <form id="form1" action="#">
+      <div class="inp">
+        <!--バーコードの数値情報はここ！---------------------------------->
+        <input type="text" id="key" onchange="fncGetHinmei(key.value)" value="0" />
+        <!---------------------------------------------------------->
+      </div>
+      <div class="hin">
+        <input type="text" id="Hinmei" value="" />
+      </div>
+      <input type="text" id="Kingak" value="0" />円
+
+      <div class="but">
+        <input type="button" onclick="fncReset()"  value="リセット" />
+      </div>
+      合計は
+      <br>
+      <input type="text" id="Out" value="0" />円です。
+      </br>
+    </form>
+  </body>
+
+  <script>
+      function qrParse(video) {
+        const canvas = new OffscreenCanvas(240, 320); //取得した描画用のcanvas
+        const render = canvas.getContext("2d"); //canvasは自分で描画するスキルがないのでrenderくんに委託
+        return new Promise((res) => { //ループするような非同期処理の結果を手に入れてから次の命令に移るpromiseくん
+          const loop = setInterval(() => {
+            render.drawImage(video, 0, 0, canvas.width, canvas.height); //renderくん描画
+  
+            const img = render.getImageData(0, 0, canvas.width, canvas.height); //imgに画像からのデータを保存
+            const result = jsQR(img.data, img.width, img.height); //jsQRにぶち込み＆解析
+  
+            if (result) { //結果が取得できればreturnしてloopもといpromise離脱
+              //clearInterval(loop);
+              return res(result.data);
+            }
+          }, 100);  //setintervalで関数に生書きしてて，インターバル100秒でループ
+        });
+      }
+  
+      /*function qrGenerate(data) {
+        const canvas = new OffscreenCanvas(1, 1);
+  
+        return new Promise((res, rej) =>
+          QRCode.toCanvas(canvas, data, {}, (err) =>
+            !err ? res(canvas) : rej(err)
+          )
+        );
+      }
+  
+      document
+        .getElementById("data")
+        .addEventListener("change", async ({ target }) => {
+          document
+            .getElementById("canvas")
+            .getContext("bitmaprenderer")
+            .transferFromImageBitmap(
+              (await qrGenerate(target.value)).transferToImageBitmap()
+            );
+        });*/
+  
+      (async () => { //非同期関数
+        const video = document.getElementById("video");
+        video.srcObject = await navigator.mediaDevices.getUserMedia({
+          audio: false,
+          video: {
+            facingMode: "environment"//ここらへんはカメラの設定みたい
+          }
+        });
+        while(true){
+          document.getElementById("key").value = await qrParse(video);
+          fncGetHinmei(key.value);
+        }
+      })();
+    </script>
+  </html>
+  
+</html>
